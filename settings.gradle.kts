@@ -1,0 +1,1 @@
+rootProject.name = "kmy_career_api"
