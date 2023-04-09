@@ -1,19 +1,24 @@
 package ru.my_career.roles.models
 
 import kotlinx.serialization.Serializable
-import org.bson.codecs.pojo.annotations.BsonId
-import org.litote.kmongo.Id
+import org.litote.kmongo.newId
+import ru.my_career.common.db.MongoId
 
+@Serializable
 data class Role(
-    @BsonId
-    val id: Id<Role>? = null,
+    val _id: MongoId<Role> = newId(),
     val title: String,
+//    val companyId: String,
+    val description: String,
+    val permissions: Collection<MongoId<Permission>>,
+//    val commonTitle: CommonRoleTitle?,
 )
 
 @Serializable
-data class RoleDto(
-    val title: String
+data class CreateRoleDto(
+    val title: String,
+//    val companyId: String,
+    val description: String,
+    val permissions: Collection<String>,
+//    val commonTitle: CommonRoleTitle?,
 )
-
-fun Role.toDto() = RoleDto(title)
-fun RoleDto.toModel() = Role(title = this.title)

@@ -1,17 +1,18 @@
 package ru.my_career.roles.models
 
 import kotlinx.serialization.Serializable
-
-data class Permission(
-    val _id: String,
-    val description: String,
-)
+import org.litote.kmongo.newId
+import ru.my_career.common.db.MongoId
 
 @Serializable
-data class PermissionDto(
+data class Permission(
+    val _id: MongoId<Permission> = newId(),
     val title: String,
     val description: String,
 )
 
-fun Permission.toDto() = PermissionDto(title = this._id.toString(), description = this.description)
-fun PermissionDto.toModel() = Permission(_id = this.title, description = this.description)
+@Serializable
+data class CreatePermissionDto(
+    val title: String,
+    val description: String,
+)
