@@ -34,7 +34,7 @@ class PermissionServiceImpl(db: MongoDB) : PermissionService {
 
     override suspend fun getPermissionsByIds(ids: Collection<String>): Collection<Permission> {
         val objectsIds = ids.map { "ObjectId('$it')" }
-        val queryString = "{ \"_id\": { \$in: [$objectsIds] } }"
+        val queryString = "{ \"_id\": { \$in: $objectsIds } }"
         return permissionRepository.find(queryString).toList()
     }
 
