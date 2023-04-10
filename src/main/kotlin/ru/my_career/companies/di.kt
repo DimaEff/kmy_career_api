@@ -1,4 +1,4 @@
-package ru.my_career.roles
+package ru.my_career.companies
 
 import org.koin.dsl.module
 import ru.my_career.companies.services.CompanyService
@@ -12,7 +12,7 @@ import ru.my_career.roles.services.RoleServiceImpl
 import ru.my_career.users.services.UsersService
 import ru.my_career.users.services.UsersServiceImpl
 
-val rolesModule = module {
+val companiesModule = module {
     single<MongoDB> { Database.db }
     single<PermissionService> { PermissionServiceImpl(get<MongoDB>()) }
     single<UsersService> { UsersServiceImpl(get<MongoDB>()) }
