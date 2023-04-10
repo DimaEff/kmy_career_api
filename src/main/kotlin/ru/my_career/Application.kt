@@ -1,6 +1,7 @@
 package ru.my_career
 
 import io.ktor.server.application.*
+import ru.my_career.auth.configureAuthRouting
 import ru.my_career.companies.configureCompaniesRouting
 import ru.my_career.plugins.*
 import ru.my_career.roles.configRolesRouting
@@ -22,4 +23,5 @@ fun Application.module() {
     configRolesRouting()
     configureUsersRouting()
     configureCompaniesRouting()
+    configureAuthRouting()
 }
