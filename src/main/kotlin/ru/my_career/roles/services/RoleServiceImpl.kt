@@ -1,5 +1,6 @@
 package ru.my_career.roles.services
 
+import org.bson.types.ObjectId
 import org.litote.kmongo.Id
 import org.litote.kmongo.set
 import ru.my_career.common.db.MongoId
@@ -14,25 +15,19 @@ import ru.my_career.users.models.User
 class RoleServiceImpl(
     db: MongoDB,
     private val permissionService: PermissionService,
-    private val companiesService: CompanyService,
 ) : RoleService {
     private val rolesRepository = db.getCollection<Role>()
 
     override suspend fun createRole(dto: CreateRoleDto): Role? {
         return try {
+            println(dto.permissions)
             val permissions = permissionService.getPermissionsByIds(dto.permissions)
-            val company = companiesService.getCompanyById(dto.companyId)
             val commonTitle = if (dto.commonTitle != null) CommonRoleTitle.valueOf(dto.commonTitle) else null
-
-            if (company == null) {
-                return null
-            }
 
             val role = Role(
                 title = dto.title,
                 description = dto.description,
                 permissions = permissions.map { it._id },
-                companyId = company._id,
                 commonTitle = commonTitle
             )
             rolesRepository.insertOne(role)
@@ -42,15 +37,20 @@ class RoleServiceImpl(
         }
     }
 
-    override suspend fun findRole(id: Id<Role>): Role? {
-        return rolesRepository.findOneById(id)
+    override suspend fun getRolesByIds(ids: Collection<String>): Collection<Role> {
+        val objectsIds = ids.map { "ObjectId('$it')" }
+        val queryString = "{ \"_id\": { \$in: $objectsIds } }"
+        return rolesRepository.find(queryString).toList()
+    }
+
+    override suspend fun findRole(id: String): Role? {
+        return rolesRepository.findOneById(ObjectId(id))
     }
 
     override suspend fun createOwnerRoleForCompany(companyId: MongoId<Company>): Role? {
         return createRole(
             CreateRoleDto(
                 title = "OWNER",
-                companyId = companyId.toString(),
                 description = "The owner of the company",
                 // TODO(): add the owner`s permissions
                 permissions = setOf("64330bfd708f0b03994dc3b2", "6433116dfd71c8382706648c"),

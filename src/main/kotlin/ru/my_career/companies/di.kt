@@ -16,6 +16,6 @@ val companiesModule = module {
     single<MongoDB> { Database.db }
     single<PermissionService> { PermissionServiceImpl(get<MongoDB>()) }
     single<UsersService> { UsersServiceImpl(get<MongoDB>()) }
-    single<RoleService> { RoleServiceImpl(get<MongoDB>(), get<PermissionService>(), get<CompanyService>()) }
+    single<RoleService> { RoleServiceImpl(get<MongoDB>(), get<PermissionService>()) }
     single<CompanyService> { CompanyServiceImpl(get<MongoDB>(), get<RoleService>(), get<UsersService>()) }
 }

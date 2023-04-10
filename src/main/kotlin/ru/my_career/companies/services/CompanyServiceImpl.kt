@@ -1,6 +1,10 @@
 package ru.my_career.companies.services
 
+import com.mongodb.client.model.PushOptions
 import org.bson.types.ObjectId
+import org.litote.kmongo.pushEach
+import org.litote.kmongo.setValue
+import org.litote.kmongo.util.idValue
 import ru.my_career.auth.models.JwtInfo
 import ru.my_career.common.db.MongoId
 import ru.my_career.companies.models.Company
@@ -23,13 +27,16 @@ class CompanyServiceImpl(
     override suspend fun createCompany(dto: CreateCompanyDto, jwtInfo: JwtInfo): Company? {
         val user = usersService.getUserById(jwtInfo.userId) ?: return null
 
-        val company = Company(title = dto.title)
+        val company = Company(title = dto.title, roles = emptySet())
         companyCollection.insertOne(company)
 
         val role = rolesService.createOwnerRoleForCompany(company._id) ?: return null
-        createCompanyUserRole(company._id, user._id, role._id)
+        addRole(company._id.toString(), setOf(role._id.toString()))
+        val companyWithRoles = getCompanyById(company._id.toString()) ?: return null
 
-        return company
+        createCompanyUserRole(companyWithRoles._id, user._id, role._id)
+
+        return companyWithRoles
     }
 
     override suspend fun getCompanyById(companyId: String): Company? {
@@ -40,7 +47,20 @@ class CompanyServiceImpl(
         }
     }
 
-    private suspend fun createCompanyUserRole(companyId: MongoId<Company>, userId: MongoId<User>, roleId: MongoId<Role>): Unit {
+    private suspend fun addRole(companyId: String, rolesIds: Collection<String>): Unit {
+        val roles = rolesService.getRolesByIds(rolesIds)
+
+        companyCollection.updateOneById(
+            ObjectId(companyId),
+            pushEach(Company::roles, roles.map { it._id })
+        )
+    }
+
+    private suspend fun createCompanyUserRole(
+        companyId: MongoId<Company>,
+        userId: MongoId<User>,
+        roleId: MongoId<Role>
+    ): Unit {
         companyUserRolesCollection.insertOne(CompanyUserRole(companyId = companyId, userId = userId, roleId = roleId))
     }
 }

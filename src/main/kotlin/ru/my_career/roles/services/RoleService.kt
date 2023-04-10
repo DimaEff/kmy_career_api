@@ -9,6 +9,7 @@ import ru.my_career.users.models.User
 
 interface RoleService {
     suspend fun createRole(dto: CreateRoleDto): Role?
-    suspend fun findRole(id: Id<Role>): Role?
+    suspend fun getRolesByIds(ids: Collection<String>): Collection<Role>
+    suspend fun findRole(id: String): Role?
     suspend fun createOwnerRoleForCompany(companyId: MongoId<Company>): Role?
 }

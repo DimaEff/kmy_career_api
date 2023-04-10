@@ -1,17 +1,18 @@
 package ru.my_career.users.models
 
 import kotlinx.serialization.Serializable
-import org.litote.kmongo.Id
 import org.litote.kmongo.newId
+import ru.my_career.common.db.MongoId
 
 @Serializable
 data class User(
-    val _id: Id<User> = newId(),
+    val _id: MongoId<User> = newId(),
     val name: String,
     val surname: String,
     val phone: String,
     val email: String,
-    var _isActive: Boolean = true
+    val _isBlocked: Boolean = false,
+    val _isActive: Boolean = true
 )
 
 

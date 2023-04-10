@@ -10,7 +10,6 @@ import ru.my_career.roles.CommonRoleTitle
 data class Role(
     val _id: MongoId<Role> = newId(),
     val title: String,
-    val companyId: MongoId<Company>,
     val description: String,
     val permissions: Collection<MongoId<Permission>>,
     val commonTitle: CommonRoleTitle? = null,
@@ -19,7 +18,6 @@ data class Role(
 @Serializable
 data class CreateRoleDto(
     val title: String,
-    val companyId: String,
     val description: String,
     val permissions: Collection<String>,
     val commonTitle: String?,
