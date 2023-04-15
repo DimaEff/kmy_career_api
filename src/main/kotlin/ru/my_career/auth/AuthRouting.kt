@@ -9,11 +9,17 @@ import ru.my_career.common.notifications.dto.SmsDto
 
 fun Application.configureAuthRouting() {
     routing {
-        post("/login") {
-            val body = call.receive<SmsDto>()
+        route("/login") {
+            post {
+                val body = call.receive<SmsDto>()
 
-            val a = NotificationServiceImpl()
-            a.sendSms(body).let { call.respond(it) }
+                val a = NotificationServiceImpl()
+                a.sendSms(body).let { call.respond(it) }
+            }
+
+            post("/login/confirmation") {
+
+            }
         }
 
         post("/register") {
