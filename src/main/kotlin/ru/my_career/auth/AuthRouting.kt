@@ -4,8 +4,8 @@ import io.ktor.server.application.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
-import ru.my_career.common.notifications.NotificationServiceImpl
-import ru.my_career.common.notifications.dto.SmsDto
+import ru.my_career._common.notifications.NotificationServiceImpl
+import ru.my_career._common.notifications.dto.SmsDto
 
 fun Application.configureAuthRouting() {
     routing {
