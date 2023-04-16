@@ -1,8 +1,6 @@
-package ru.my_career.config
+package ru.my_career.common.di
 
 import org.koin.dsl.module
-import ru.my_career.common.notifications.NotificationService
-import ru.my_career.common.notifications.NotificationServiceImpl
 
 val applicationModule = module {
 //    single<MongoDB> { Database.db }

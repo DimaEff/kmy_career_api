@@ -1,19 +1,24 @@
-package ru.my_career.config
+package ru.my_career.common.database
 
 import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
 import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.SchemaUtils
-import org.jetbrains.exposed.sql.addLogger
 import org.jetbrains.exposed.sql.transactions.transaction
 import ru.my_career.roles.tables.PermissionsTable
+import ru.my_career.roles.tables.RolesPermissionsTable
+import ru.my_career.roles.tables.RolesTable
 
 object DatabaseFactory {
     fun init() {
         Database.connect(hikari())
         initDB()
         transaction {
-            SchemaUtils.create(PermissionsTable)
+            SchemaUtils.create(
+                PermissionsTable,
+                RolesTable,
+                RolesPermissionsTable
+            )
         }
     }
 
@@ -22,6 +27,7 @@ object DatabaseFactory {
         val config = HikariConfig("/hikari.properties")
         val ds = HikariDataSource(config)
         Database.connect(ds)
+        initCustomTypes()
     }
 
     // database connection for h2 d

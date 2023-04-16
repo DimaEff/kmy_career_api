@@ -56,11 +56,6 @@ dependencies {
     implementation("org.postgresql:postgresql:42.6.0")
     implementation("com.zaxxer:HikariCP:5.0.1")
 
-    // kmongo
-//    val kmongo_version="4.8.0"
-//    implementation("org.litote.kmongo:kmongo-coroutine:$kmongo_version")
-//    implementation("org.litote.kmongo:kmongo-id-serialization:$kmongo_version")
-
     // tests
     testImplementation("io.ktor:ktor-server-tests-jvm:$ktor_version")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit:$kotlin_version")

@@ -1,4 +1,4 @@
-package ru.my_career.common.notifications.constants
+package ru.my_career.common.database
 
 const val VARCHAR_SHORT = 32
 const val VARCHAR_MID = 256
