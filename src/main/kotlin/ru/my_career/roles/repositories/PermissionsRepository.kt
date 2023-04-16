@@ -3,6 +3,8 @@ package ru.my_career.roles.repositories
 import org.jetbrains.exposed.dao.IntEntity
 import org.jetbrains.exposed.dao.IntEntityClass
 import org.jetbrains.exposed.dao.id.EntityID
+import org.jetbrains.exposed.sql.ResultRow
+import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.slf4j.LoggerFactory
 import ru.my_career._common.database.Id
@@ -24,6 +26,17 @@ class PermissionsRepository {
             logger.error("Filed to create a permission: ${e.message}")
             null
         }
+    }
+
+    fun findByTitle(title: String): PermissionDao? {
+        var permission: PermissionDao? = null
+
+        transaction {
+            permission = PermissionsTable.select { PermissionsTable.title eq title }.limit(1).firstOrNull()
+                ?.let { PermissionDao.wrapRow(it) }
+        }
+
+        return permission
     }
 }
 

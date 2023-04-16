@@ -18,11 +18,7 @@ fun Application.configRolesRouting() {
 
                 val res = permissionsService.createPermission(body)
 
-                if (res.payload == null) {
-                    call.respond(res.statusCode, res.errorMessage ?: "Error")
-                } else {
-                    call.respond(res.statusCode, res.payload)
-                }
+                call.respond(res.statusCode, res)
             }
         }
     }

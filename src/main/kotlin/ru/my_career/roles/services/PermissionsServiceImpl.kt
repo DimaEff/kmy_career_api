@@ -12,6 +12,14 @@ class PermissionsServiceImpl(
 ) : PermissionsService {
     override fun createPermission(dto: CreatePermissionDto): ResponseEntity<PermissionDto> {
         val title = getPermissionTitle(dto)
+        val permissionById = permissionsRepository.findByTitle(title)
+        if (permissionById != null) {
+            return ResponseEntity(
+                statusCode = HttpStatusCode.BadRequest,
+                errorMessage = "The permission with title `${title}` already exists"
+            )
+        }
+
         val permissionToCreate = PermissionDto(title = title, description = dto.description)
         val permission = permissionsRepository.createPermission(permissionToCreate)
             ?: return ResponseEntity(
