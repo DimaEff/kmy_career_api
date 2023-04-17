@@ -5,5 +5,6 @@ import ru.my_career.roles.dto.CreatePermissionDto
 import ru.my_career.roles.dto.PermissionDto
 
 interface PermissionsService {
+    fun getAllPermissions(): ResponseEntity<Collection<PermissionDto>>
     fun createPermission(dto: CreatePermissionDto): ResponseEntity<PermissionDto>
 }

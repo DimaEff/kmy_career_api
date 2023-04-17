@@ -10,6 +10,18 @@ import ru.my_career.roles.repositories.toDto
 class PermissionsServiceImpl(
     private val permissionsRepository: PermissionsRepository
 ) : PermissionsService {
+    override fun getAllPermissions(): ResponseEntity<Collection<PermissionDto>> {
+        val permissions = permissionsRepository.getAllPermissions()
+        return if (permissions == null) {
+            ResponseEntity(
+                HttpStatusCode.InternalServerError,
+                errorMessage = "Failed to get all permissions"
+            )
+        } else {
+            ResponseEntity(payload = permissions.map { it.toDto() })
+        }
+    }
+
     override fun createPermission(dto: CreatePermissionDto): ResponseEntity<PermissionDto> {
         val title = getPermissionTitle(dto)
         val permissionById = permissionsRepository.findByTitle(title)
@@ -27,7 +39,7 @@ class PermissionsServiceImpl(
                 errorMessage = "Error while a create permission"
             )
 
-        return ResponseEntity(HttpStatusCode.OK, payload = permission.toDto())
+        return ResponseEntity(HttpStatusCode.Created, payload = permission.toDto())
     }
 
     private fun getPermissionTitle(dto: CreatePermissionDto): String = "${dto.title}:${dto.permissionType}"
