@@ -3,10 +3,8 @@ package ru.my_career.roles.services
 import io.ktor.http.*
 import ru.my_career._common.database.Id
 import ru.my_career._common.types.ResponseEntity
-import ru.my_career.roles.dto.CreateRoleDto
-import ru.my_career.roles.dto.PermissionDto
-import ru.my_career.roles.dto.RoleDto
-import ru.my_career.roles.dto.UpdateRolePermissionsDto
+import ru.my_career.roles.CommonRoleTitle
+import ru.my_career.roles.dto.*
 import ru.my_career.roles.repositories.PermissionsRepository
 import ru.my_career.roles.repositories.RolesRepository
 import ru.my_career.roles.repositories.toDto
@@ -25,10 +23,16 @@ class RolesServiceImpl(
     }
 
     override fun createRole(dto: CreateRoleDto): ResponseEntity<RoleDto> {
-        val permissions = permissionsRepository.checkIsAllPermissionsExistsAndGetPermissions(dto.permissions) ?: return ResponseEntity(
-            HttpStatusCode.BadRequest,
-            errorMessage = "Invalid permissions ids collections"
-        )
+        val commonRolePermissionsIds =
+            if (dto.commonRoleTitle != null) rolesRepository.getPermissionsForCommonRole(CommonRoleTitle.valueOf(dto.commonRoleTitle)) else emptySet()
+        val permissionsIds = (dto.permissions + commonRolePermissionsIds).distinct()
+
+        val permissions = permissionsRepository.checkIsAllPermissionsExistsAndGetPermissions(permissionsIds)
+            ?: return ResponseEntity(
+                HttpStatusCode.BadRequest,
+                errorMessage = "Invalid permissions ids collections"
+            )
+
         val role = rolesRepository.createRole(dto, permissions)
         return if (role == null) {
             ResponseEntity(HttpStatusCode.InternalServerError, errorMessage = "Error while create a role")
@@ -72,6 +76,28 @@ class RolesServiceImpl(
             ResponseEntity(
                 HttpStatusCode.InternalServerError,
                 errorMessage = "Failed removing permission from role ${dto.roleId}"
+            )
+        } else {
+            ResponseEntity(payload = "Success removing")
+        }
+    }
+
+    override fun addCommonRolePermissions(dto: CreateUpdateCommonRolePermissionsDto): ResponseEntity<String> {
+        return if (rolesRepository.addCommonRolePermissions(dto) == null) {
+            ResponseEntity(
+                HttpStatusCode.InternalServerError,
+                errorMessage = "Failed creating a common role permissions"
+            )
+        } else {
+            ResponseEntity(payload = "Success adding")
+        }
+    }
+
+    override fun removePermissionsFromCommonRole(dto: CreateUpdateCommonRolePermissionsDto): ResponseEntity<String> {
+        return if (rolesRepository.removePermissionsFromCommonRole(dto) == null) {
+            ResponseEntity(
+                HttpStatusCode.InternalServerError,
+                errorMessage = "Failed removing a common role permissions"
             )
         } else {
             ResponseEntity(payload = "Success removing")

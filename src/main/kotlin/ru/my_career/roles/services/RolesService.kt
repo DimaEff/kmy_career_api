@@ -2,10 +2,7 @@ package ru.my_career.roles.services
 
 import ru.my_career._common.database.Id
 import ru.my_career._common.types.ResponseEntity
-import ru.my_career.roles.dto.CreateRoleDto
-import ru.my_career.roles.dto.PermissionDto
-import ru.my_career.roles.dto.RoleDto
-import ru.my_career.roles.dto.UpdateRolePermissionsDto
+import ru.my_career.roles.dto.*
 
 interface RolesService {
     fun getAllRoles(): ResponseEntity<Collection<RoleDto>>
@@ -14,4 +11,6 @@ interface RolesService {
     fun addPermissionsToRole(dto: UpdateRolePermissionsDto): ResponseEntity<String>
     fun removePermissionFromRole(dto: UpdateRolePermissionsDto): ResponseEntity<String>
     fun createRole(dto: CreateRoleDto): ResponseEntity<RoleDto>
+    fun addCommonRolePermissions(dto: CreateUpdateCommonRolePermissionsDto): ResponseEntity<String>
+    fun removePermissionsFromCommonRole(dto: CreateUpdateCommonRolePermissionsDto): ResponseEntity<String>
 }
