@@ -3,6 +3,7 @@ package ru.my_career.roles.services
 import io.ktor.http.*
 import ru.my_career._common.database.Id
 import ru.my_career._common.types.ResponseEntity
+import ru.my_career.auth.dto.JwtInfo
 import ru.my_career.roles.CommonRoleTitle
 import ru.my_career.roles.dto.*
 import ru.my_career.roles.repositories.PermissionsRepository
@@ -13,8 +14,8 @@ class RolesServiceImpl(
     private val rolesRepository: RolesRepository,
     private val permissionsRepository: PermissionsRepository
 ) : RolesService {
-    override fun getAllRoles(): ResponseEntity<Collection<RoleDto>> {
-        val roles = rolesRepository.getAllRoles()
+    override fun getUserRolesForCompany(jwtInfo: JwtInfo): ResponseEntity<Collection<RoleDto>> {
+        val roles = rolesRepository.getUserRolesForCompany(jwtInfo.companyId, jwtInfo.userId)
         return if (roles == null) {
             ResponseEntity(HttpStatusCode.InternalServerError, errorMessage = "Failed to get all roles")
         } else {
@@ -22,7 +23,7 @@ class RolesServiceImpl(
         }
     }
 
-    override fun createRole(dto: CreateRoleDto, companyId: Id, userId: Id): ResponseEntity<RoleDto> {
+    override fun createRole(dto: CreateRoleDto, jwtInfo: JwtInfo): ResponseEntity<RoleDto> {
         val commonRolePermissionsIds =
             if (dto.commonRoleTitle != null) rolesRepository.getPermissionsForCommonRole(CommonRoleTitle.valueOf(dto.commonRoleTitle)) else emptySet()
         val permissionsIds = (dto.permissions + commonRolePermissionsIds).distinct()
@@ -33,7 +34,7 @@ class RolesServiceImpl(
                 errorMessage = "Invalid permissions ids collections"
             )
 
-        val role = rolesRepository.createRole(dto, permissions, companyId, userId)
+        val role = rolesRepository.createRole(dto, permissions, jwtInfo.companyId, jwtInfo.userId)
         return if (role == null) {
             ResponseEntity(HttpStatusCode.InternalServerError, errorMessage = "Error while create a role")
         } else {

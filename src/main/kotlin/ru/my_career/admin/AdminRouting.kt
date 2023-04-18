@@ -18,6 +18,20 @@ fun Application.configAdminRouting() {
 
         route("/admin") {
             route("/roles") {
+                route("/permissions") {
+                    get {
+                        val res = permissionsService.getAllPermissions()
+                        call.respond(res.statusCode, res)
+                    }
+
+                    post {
+                        val body = call.receive<CreatePermissionDto>()
+                        val res = permissionsService.createPermission(body)
+
+                        call.respond(res.statusCode, res)
+                    }
+                }
+
                 route("/common_role_permissions") {
                     post("/add") {
                         val body = call.receive<CreateUpdateCommonRolePermissionsDto>()

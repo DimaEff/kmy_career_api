@@ -1,9 +1,9 @@
 package ru.my_career._common.requests
 
 import io.ktor.server.application.*
-import ru.my_career._common.database.Id
+import ru.my_career.auth.dto.JwtInfo
 
-fun getUserCompanyFromQueries(call: ApplicationCall): Pair<Id, Id> {
+fun getJwtInfo(call: ApplicationCall): JwtInfo {
     val queries = call.request.queryParameters
-    return Pair(queries["userId"]?.toInt()!!, queries["companyId"]?.toInt()!!)
+    return JwtInfo(queries["userId"]?.toInt()!!, queries["companyId"]?.toInt()!!)
 }

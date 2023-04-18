@@ -1,18 +1,13 @@
 package ru.my_career.companies.repositories
 
-import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.transaction
 import ru.my_career._common.database.Id
 import ru.my_career.companies.dto.CreateCompanyDto
 import ru.my_career.companies.tables.CompaniesTable
 import ru.my_career.companies.tables.CompaniesUsersRolesTable
-import ru.my_career.roles.repositories.RoleDao
-import ru.my_career.roles.repositories.RolesRepository
 
-class CompaniesRepository(
-    private val rolesRepository: RolesRepository
-) {
+class CompaniesRepository() {
     fun createCompany(dto: CreateCompanyDto,): CompanyDao? {
         return transaction {
             CompanyDao.new {
@@ -29,18 +24,6 @@ class CompaniesRepository(
         }
 
         return getCompaniesByIds(companiesIds)
-    }
-
-    fun getUserRolesForCompany(companyId: Id, userId: Id): Collection<RoleDao> {
-        var rolesIds: Collection<Id> = emptySet()
-        transaction {
-            rolesIds = CompaniesUsersRolesTable.select {
-                (CompaniesUsersRolesTable.company eq companyId) and
-                        (CompaniesUsersRolesTable.user eq userId)
-            }.map { it[CompaniesUsersRolesTable.role].value }
-        }
-
-        return rolesRepository.getRolesByIds(rolesIds)
     }
 
     private fun getCompaniesByIds(ids: Collection<Id>): Collection<CompanyDao> {

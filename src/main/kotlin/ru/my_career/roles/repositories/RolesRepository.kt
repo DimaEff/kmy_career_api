@@ -23,17 +23,16 @@ import ru.my_career.roles.tables.RolesTable
 class RolesRepository {
     private val logger = LoggerFactory.getLogger(RolesRepository::class.java)
 
-    fun getAllRoles(): Collection<RoleDao>? = try {
-        var roles: Collection<RoleDao>? = null
-
+    fun getUserRolesForCompany(companyId: Id, userId: Id): Collection<RoleDao> {
+        var rolesIds: Collection<Id> = emptySet()
         transaction {
-            roles = RolesTable.selectAll().map { RoleDao.wrapRow(it) }
+            rolesIds = CompaniesUsersRolesTable.select {
+                (CompaniesUsersRolesTable.company eq companyId) and
+                        (CompaniesUsersRolesTable.user eq userId)
+            }.map { it[CompaniesUsersRolesTable.role].value }
         }
 
-        roles
-    } catch (e: Throwable) {
-        logger.error("getAllRoles: ${e.message}")
-        null
+        return getRolesByIds(rolesIds)
     }
 
     fun getRolesByIds(ids: Collection<Id>): Collection<RoleDao> {
