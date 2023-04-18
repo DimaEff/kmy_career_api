@@ -19,7 +19,7 @@ val applicationModule = module {
     single { PermissionsRepository() }
     single { RolesRepository() }
     single { UsersRepository() }
-    single { CompaniesRepository(get<RolesRepository>()) }
+    single { CompaniesRepository() }
 
     // services
     single<PermissionsService> { PermissionsServiceImpl(get<PermissionsRepository>()) }
