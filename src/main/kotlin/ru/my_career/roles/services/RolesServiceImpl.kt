@@ -22,7 +22,7 @@ class RolesServiceImpl(
         }
     }
 
-    override fun createRole(dto: CreateRoleDto): ResponseEntity<RoleDto> {
+    override fun createRole(dto: CreateRoleDto, companyId: Id, userId: Id): ResponseEntity<RoleDto> {
         val commonRolePermissionsIds =
             if (dto.commonRoleTitle != null) rolesRepository.getPermissionsForCommonRole(CommonRoleTitle.valueOf(dto.commonRoleTitle)) else emptySet()
         val permissionsIds = (dto.permissions + commonRolePermissionsIds).distinct()
@@ -33,7 +33,7 @@ class RolesServiceImpl(
                 errorMessage = "Invalid permissions ids collections"
             )
 
-        val role = rolesRepository.createRole(dto, permissions)
+        val role = rolesRepository.createRole(dto, permissions, companyId, userId)
         return if (role == null) {
             ResponseEntity(HttpStatusCode.InternalServerError, errorMessage = "Error while create a role")
         } else {
@@ -61,7 +61,7 @@ class RolesServiceImpl(
     }
 
     override fun addPermissionsToRole(dto: UpdateRolePermissionsDto): ResponseEntity<String> {
-        val permissions = permissionsRepository.checkIsAllPermissionsExistsAndGetPermissions(dto.permissions)
+        permissionsRepository.checkIsAllPermissionsExistsAndGetPermissions(dto.permissions)
             ?: return ResponseEntity(HttpStatusCode.BadRequest, errorMessage = "Not all permissions exists")
 
         return if (rolesRepository.addPermissionToRole(dto) == null) {

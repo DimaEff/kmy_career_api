@@ -9,6 +9,8 @@ import org.jetbrains.exposed.sql.SqlExpressionBuilder.inList
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.slf4j.LoggerFactory
 import ru.my_career._common.database.Id
+import ru.my_career.companies.repositories.CompanyDao
+import ru.my_career.companies.tables.CompaniesUsersRolesTable
 import ru.my_career.roles.CommonRoleTitle
 import ru.my_career.roles.dto.CreateRoleDto
 import ru.my_career.roles.dto.CreateUpdateCommonRolePermissionsDto
@@ -34,6 +36,15 @@ class RolesRepository {
         null
     }
 
+    fun getRolesByIds(ids: Collection<Id>): Collection<RoleDao> {
+        var roles: Collection<RoleDao> = emptySet()
+        transaction {
+            roles = RolesTable.select { RolesTable.id inList ids }.map { RoleDao.wrapRow(it) }
+        }
+
+        return roles
+    }
+
     fun getRoleById(id: Id): RoleDao? = try {
         transaction {
             RoleDao.findById(id)
@@ -43,9 +54,13 @@ class RolesRepository {
         null
     }
 
-    fun createRole(dto: CreateRoleDto, rolesPermissions: Collection<PermissionDao>): RoleDao? {
+    fun createRole(dto: CreateRoleDto, rolesPermissions: Collection<PermissionDao>, companyId: Id, userId: Id): RoleDao? {
         return try {
             val commonTitle = if (dto.commonRoleTitle == null) null else CommonRoleTitle.getValueBy(dto.commonRoleTitle)
+
+            val companyDao = transaction {
+                CompanyDao.findById(companyId)
+            } ?: return null
 
             val createdRole = transaction {
                 RoleDao.new {
@@ -53,8 +68,10 @@ class RolesRepository {
                     description = dto.description
                     commonRoleTitle = commonTitle
                     permissions = SizedCollection(rolesPermissions)
+                    company = companyDao
                 }
             }
+            addRoleForCompanyAndUser(companyId, userId, createdRole.id.value)
 
             createdRole
         } catch (e: Throwable) {
@@ -139,6 +156,16 @@ class RolesRepository {
         return permissionsIds
     }
 
+    private fun addRoleForCompanyAndUser(companyId: Id, userId: Id, roleId: Id): Unit {
+        transaction {
+            CompaniesUsersRolesTable.insert {
+                it[CompaniesUsersRolesTable.company] = companyId
+                it[CompaniesUsersRolesTable.user] = userId
+                it[CompaniesUsersRolesTable.role] = roleId
+            }
+        }
+    }
+
     private fun checkIsCommonRoleExistsPermissions(dto: CreateUpdateCommonRolePermissionsDto): Boolean {
         val permissionsIds = getPermissionsForCommonRole(CommonRoleTitle.valueOf(dto.commonRoleTitle))
         return permissionsIds.any { it in dto.permissions }
@@ -162,6 +189,7 @@ class RoleDao(id: EntityID<Id>) : IntEntity(id) {
     var description by RolesTable.description
     var commonRoleTitle by RolesTable.commonRoleTitle
     var permissions by PermissionDao via RolesPermissionsTable
+    var company by CompanyDao referencedOn RolesTable.company
 }
 
 fun RoleDao.toDto(): RoleDto = RoleDto(

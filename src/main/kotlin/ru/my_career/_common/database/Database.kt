@@ -5,10 +5,13 @@ import com.zaxxer.hikari.HikariDataSource
 import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.transactions.transaction
+import ru.my_career.companies.tables.CompaniesTable
+import ru.my_career.companies.tables.CompaniesUsersRolesTable
 import ru.my_career.roles.tables.CommonRoleTitlePermissionTable
 import ru.my_career.roles.tables.PermissionsTable
 import ru.my_career.roles.tables.RolesPermissionsTable
 import ru.my_career.roles.tables.RolesTable
+import ru.my_career.users.tables.UsersTable
 
 object DatabaseFactory {
     fun init() {
@@ -19,7 +22,10 @@ object DatabaseFactory {
                 PermissionsTable,
                 RolesTable,
                 RolesPermissionsTable,
-                CommonRoleTitlePermissionTable
+                CommonRoleTitlePermissionTable,
+                UsersTable,
+                CompaniesTable,
+                CompaniesUsersRolesTable
             )
         }
     }
