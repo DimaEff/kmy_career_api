@@ -5,6 +5,7 @@ import com.zaxxer.hikari.HikariDataSource
 import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.transactions.transaction
+import ru.my_career._common.confirmations.tables.ConfirmationsTable
 import ru.my_career.companies.tables.CompaniesTable
 import ru.my_career.companies.tables.CompaniesUsersRolesTable
 import ru.my_career.roles.tables.CommonRoleTitlePermissionTable
@@ -25,7 +26,8 @@ object DatabaseFactory {
                 CommonRoleTitlePermissionTable,
                 UsersTable,
                 CompaniesTable,
-                CompaniesUsersRolesTable
+                CompaniesUsersRolesTable,
+                ConfirmationsTable
             )
         }
     }

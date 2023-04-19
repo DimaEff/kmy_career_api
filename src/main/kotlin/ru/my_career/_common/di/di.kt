@@ -1,6 +1,13 @@
 package ru.my_career._common.di
 
+import io.ktor.client.*
 import org.koin.dsl.module
+import ru.my_career._common.confirmations.repositories.ConfirmationsRepository
+import ru.my_career._common.confirmations.services.ConfirmationsService
+import ru.my_career._common.confirmations.services.ConfirmationsServiceImpl
+import ru.my_career._common.httpClient.httpClient
+import ru.my_career._common.notifications.services.NotificationService
+import ru.my_career._common.notifications.services.NotificationServiceImpl
 import ru.my_career.companies.repositories.CompaniesRepository
 import ru.my_career.companies.services.CompaniesService
 import ru.my_career.companies.services.CompaniesServiceImpl
@@ -20,6 +27,17 @@ val applicationModule = module {
     single { RolesRepository() }
     single { UsersRepository() }
     single { CompaniesRepository() }
+    single { ConfirmationsRepository() }
+
+    // common
+    single<HttpClient> { httpClient }
+    single<NotificationService> { NotificationServiceImpl(get<HttpClient>()) }
+    single<ConfirmationsService> {
+        ConfirmationsServiceImpl(
+            get<ConfirmationsRepository>(),
+            get<NotificationService>()
+        )
+    }
 
     // services
     single<PermissionsService> { PermissionsServiceImpl(get<PermissionsRepository>()) }

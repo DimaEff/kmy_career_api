@@ -1,4 +1,4 @@
-package ru.my_career._common.notifications.dto
+package ru.my_career._common.confirmations.dto
 
 import kotlinx.serialization.Serializable
 
