@@ -1,7 +1,8 @@
 package ru.my_career._common.confirmations
 
 enum class ConfirmationStatus {
-    SUCCESS,
+    CONFIRMED,
+    NOT_CONFIRMED,
     INVALID_CODE,
     INVALID_SUBJECT
 }

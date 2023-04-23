@@ -1,12 +1,12 @@
-package ru.my_career.users.services
+package ru.my_career._common.users.services
 
 import io.ktor.http.*
 import ru.my_career._common.database.Id
 import ru.my_career._common.types.ResponseEntity
-import ru.my_career.users.dto.CreateUserDto
-import ru.my_career.users.dto.UserDto
-import ru.my_career.users.repositories.UsersRepository
-import ru.my_career.users.repositories.toDto
+import ru.my_career._common.users.dto.CreateUserDto
+import ru.my_career._common.users.dto.UserDto
+import ru.my_career._common.users.repositories.UsersRepository
+import ru.my_career._common.users.repositories.toDto
 
 class UsersServiceImpl(
     private val usersRepository: UsersRepository
@@ -26,5 +26,11 @@ class UsersServiceImpl(
             errorMessage = "The user not found"
         )
         return ResponseEntity(HttpStatusCode.OK, user.toDto())
+    }
+
+    override fun getUserByPhone(phoneNumber: String): ResponseEntity<UserDto> {
+        val user = usersRepository.getUserByPhoneNumber(phoneNumber) ?: return ResponseEntity(HttpStatusCode.NotFound, errorMessage = "User not found")
+
+        return ResponseEntity(payload = user.toDto())
     }
 }

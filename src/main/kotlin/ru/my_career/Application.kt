@@ -6,7 +6,6 @@ import ru.my_career._plugins.*
 import ru.my_career.admin.configAdminRouting
 import ru.my_career.companies.configCompaniesRouting
 import ru.my_career.roles.configRolesRouting
-import ru.my_career.users.configUsersRouting
 
 fun main(args: Array<String>): Unit = io.ktor.server.netty.EngineMain.main(args)
 
@@ -16,8 +15,8 @@ fun Application.module() {
     configureAuthRouting()
     configRolesRouting()
     configAdminRouting()
-    configUsersRouting()
     configCompaniesRouting()
+    configureAuthRouting()
 
     configureSecurity()
     configureHTTP()

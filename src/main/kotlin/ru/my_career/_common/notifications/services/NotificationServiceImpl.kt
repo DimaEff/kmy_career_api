@@ -5,7 +5,7 @@ import io.ktor.client.call.*
 import io.ktor.client.request.*
 import io.ktor.http.*
 import ru.my_career._common.notifications.DEFAULT_CODE_SENDER
-import ru.my_career._common.confirmations.dto.AeroSmsResponseDto
+import ru.my_career._common.notifications.dto.AeroSmsResponseDto
 import ru.my_career._common.notifications.dto.SmsDto
 import ru.my_career._common.types.ResponseEntity
 import java.util.*

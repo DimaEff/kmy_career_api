@@ -1,11 +1,11 @@
-package ru.my_career.users.repositories
+package ru.my_career._common.users.repositories
 
 import org.jetbrains.exposed.dao.IntEntity
 import org.jetbrains.exposed.dao.IntEntityClass
 import org.jetbrains.exposed.dao.id.EntityID
 import ru.my_career._common.database.Id
-import ru.my_career.users.dto.UserDto
-import ru.my_career.users.tables.UsersTable
+import ru.my_career._common.users.dto.UserDto
+import ru.my_career._common.users.tables.UsersTable
 
 class UserDao(id: EntityID<Id>): IntEntity(id) {
     companion object : IntEntityClass<UserDao>(UsersTable)

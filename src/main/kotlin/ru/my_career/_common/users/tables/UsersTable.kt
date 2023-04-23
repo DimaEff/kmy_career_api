@@ -1,4 +1,4 @@
-package ru.my_career.users.tables
+package ru.my_career._common.users.tables
 
 import ru.my_career._common.database.DefaultTable
 import ru.my_career._common.database.VARCHAR_PHONE_NUMBER

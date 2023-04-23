@@ -2,9 +2,7 @@ package ru.my_career._common.confirmations.services
 
 import io.ktor.http.*
 import ru.my_career._common.confirmations.ConfirmationStatus
-import ru.my_career._common.confirmations.dto.AddCheckConfirmationDto
 import ru.my_career._common.confirmations.repositories.ConfirmationsRepository
-import ru.my_career._common.notifications.dto.SmsDto
 import ru.my_career._common.notifications.services.NotificationService
 import ru.my_career._common.types.ResponseEntity
 
@@ -12,30 +10,49 @@ class ConfirmationsServiceImpl(
     private val confirmationsRepository: ConfirmationsRepository,
     private val notificationService: NotificationService
 ) : ConfirmationsService {
-    override suspend fun addConfirmation(phoneNumber: String): ResponseEntity<String> {
+    override suspend fun addConfirmation(confirmationSubject: String): ResponseEntity<String> {
         val code = getRandomCode()
-        val aeroRes = notificationService.sendSms(SmsDto(phoneNumber, getTemplateConfirmationCodeMessage(code)))
-        if (aeroRes.payload?.success != true) {
-            return ResponseEntity(aeroRes.statusCode, errorMessage = aeroRes.errorMessage)
+//        todo: in the development mode we shouldn`t use aeroSms
+//        val aeroRes = notificationService.sendSms(SmsDto(confirmationSubject, getTemplateConfirmationCodeMessage(code)))
+//        if (aeroRes.payload?.success != true) {
+//            return ResponseEntity(aeroRes.statusCode, errorMessage = aeroRes.errorMessage)
+//        }
+
+        val confirmation = confirmationsRepository.getConfirmationBySubject(confirmationSubject)
+
+        if (confirmation == null) {
+            confirmationsRepository.createConfirmation(confirmationSubject, code)
+                ?: return ResponseEntity<String>(
+                    HttpStatusCode.InternalServerError,
+                    errorMessage = "Error while adding a confirmation"
+                )
+        } else {
+            confirmationsRepository.setCode(confirmation, code)
         }
 
-        confirmationsRepository.addConfirmation(AddCheckConfirmationDto(phoneNumber, code)) ?: return ResponseEntity(
-            HttpStatusCode.InternalServerError,
-            "Error while adding a confirmation"
-        )
 
         return ResponseEntity(HttpStatusCode.Created, "Success added the confirmation")
     }
 
-    override fun checkConfirmation(dto: AddCheckConfirmationDto): ResponseEntity<ConfirmationStatus> {
-        val confirmation = confirmationsRepository.getConfirmationBySubject(dto.confirmationSubject)
+    override fun checkCode(confirmationSubject: String, code: String): ResponseEntity<ConfirmationStatus> {
+        val confirmation = confirmationsRepository.getConfirmationBySubject(confirmationSubject)
         return when (confirmation?.code) {
             null -> ResponseEntity(HttpStatusCode.NotFound, ConfirmationStatus.INVALID_SUBJECT)
-            dto.code -> {
-                confirmationsRepository.setConfirmed(confirmation)
-                ResponseEntity(payload = ConfirmationStatus.SUCCESS)
+            code -> {
+                confirmationsRepository.setConfirmedAndClearCode(confirmation)
+                ResponseEntity(payload = ConfirmationStatus.CONFIRMED)
             }
+
             else -> ResponseEntity(payload = ConfirmationStatus.INVALID_CODE)
+        }
+    }
+
+    override fun isConfirmed(confirmationSubject: String): ResponseEntity<ConfirmationStatus> {
+        val confirmation = confirmationsRepository.getConfirmationBySubject(confirmationSubject)
+        return when(confirmation?.isConfirmed) {
+            null -> ResponseEntity(payload = ConfirmationStatus.INVALID_SUBJECT)
+            true -> ResponseEntity(payload = ConfirmationStatus.CONFIRMED)
+            false -> ResponseEntity(payload = ConfirmationStatus.NOT_CONFIRMED)
         }
     }
 

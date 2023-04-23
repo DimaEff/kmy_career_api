@@ -1,9 +1,11 @@
-package ru.my_career.users.repositories
+package ru.my_career._common.users.repositories
 
+import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.slf4j.LoggerFactory
 import ru.my_career._common.database.Id
-import ru.my_career.users.dto.CreateUserDto
+import ru.my_career._common.users.dto.CreateUserDto
+import ru.my_career._common.users.tables.UsersTable
 
 class UsersRepository {
     private val logger = LoggerFactory.getLogger(UsersRepository::class.java)
@@ -23,4 +25,8 @@ class UsersRepository {
     }
 
     fun getUser(id: Id): UserDao? = UserDao.findById(id)
+
+    fun getUserByPhoneNumber(phoneNumber: String): UserDao? = transaction {
+        UsersTable.select { UsersTable.phoneNumber eq phoneNumber }.limit(1).firstOrNull()?.let { UserDao.wrapRow(it) }
+    }
 }

@@ -1,4 +1,4 @@
-package ru.my_career.users.dto
+package ru.my_career._common.users.dto
 
 import kotlinx.serialization.Serializable
 import ru.my_career._common.database.Id

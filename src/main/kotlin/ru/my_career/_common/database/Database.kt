@@ -12,7 +12,7 @@ import ru.my_career.roles.tables.CommonRoleTitlePermissionTable
 import ru.my_career.roles.tables.PermissionsTable
 import ru.my_career.roles.tables.RolesPermissionsTable
 import ru.my_career.roles.tables.RolesTable
-import ru.my_career.users.tables.UsersTable
+import ru.my_career._common.users.tables.UsersTable
 
 object DatabaseFactory {
     fun init() {
