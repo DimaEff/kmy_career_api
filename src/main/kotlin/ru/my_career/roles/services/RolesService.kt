@@ -9,6 +9,7 @@ interface RolesService {
     fun createRole(dto: CreateRoleDto, jwtInfo: JwtInfo): ResponseEntity<RoleDto>
     fun getUserRolesForCompany(jwtInfo: JwtInfo): ResponseEntity<Collection<RoleDto>>
     fun getRoleById(id: Id): ResponseEntity<RoleDto>
+    fun getUserPermissionsForCompany(userId: Id, companyId: Id): ResponseEntity<Collection<PermissionDto>>
     fun getRolePermissions(id: Id): ResponseEntity<Collection<PermissionDto>>
     fun addPermissionsToRole(dto: UpdateRolePermissionsDto): ResponseEntity<String>
     fun removePermissionFromRole(dto: UpdateRolePermissionsDto): ResponseEntity<String>

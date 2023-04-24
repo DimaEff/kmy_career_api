@@ -46,5 +46,12 @@ val applicationModule = module {
     single<PermissionsService> { PermissionsServiceImpl(get<PermissionsRepository>()) }
     single<RolesService> { RolesServiceImpl(get<RolesRepository>(), get<PermissionsRepository>()) }
     single<CompaniesService> { CompaniesServiceImpl(get<RolesService>(), get<CompaniesRepository>()) }
-    single<AuthService> { AuthServiceImpl(get<ConfirmationsService>(), get<UsersService>()) }
+    single<AuthService> {
+        AuthServiceImpl(
+            get<ConfirmationsService>(),
+            get<UsersService>(),
+            get<RolesService>(),
+            get<CompaniesService>()
+        )
+    }
 }

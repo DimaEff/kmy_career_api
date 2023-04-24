@@ -15,17 +15,17 @@ fun Application.configCompaniesRouting() {
 
         route("/companies") {
             get {
-                val jwtInfo = getJwtInfo(call)
+                val userId = call.request.queryParameters["userId"]
                 // TODO: implement validating the `userId` field
-                val res = companiesService.getUserCompanies(jwtInfo.userId)
+                val res = companiesService.getUserCompanies(userId!!.toInt())
                 call.respond(res.statusCode, res)
             }
 
             post {
                 val body = call.receive<CreateCompanyDto>()
-                val jwtInfo = getJwtInfo(call)
+                val userId = call.request.queryParameters["userId"]
                 // TODO: implement validating the `userId` field
-                val res = companiesService.createCompany(body, jwtInfo.userId)
+                val res = companiesService.createCompany(body, userId!!.toInt())
                 call.respond(res.statusCode, res)
             }
         }

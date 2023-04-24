@@ -24,7 +24,7 @@ class UsersRepository {
         null
     }
 
-    fun getUser(id: Id): UserDao? = UserDao.findById(id)
+    fun getUser(id: Id): UserDao? = transaction { UserDao.findById(id) }
 
     fun getUserByPhoneNumber(phoneNumber: String): UserDao? = transaction {
         UsersTable.select { UsersTable.phoneNumber eq phoneNumber }.limit(1).firstOrNull()?.let { UserDao.wrapRow(it) }

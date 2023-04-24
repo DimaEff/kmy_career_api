@@ -75,10 +75,10 @@ class PermissionsRepository {
         return permission
     }
 
-    fun getAllPermissionsOfRole(roleId: Id): Collection<PermissionDao>? {
+    fun getAllPermissionsOfRoles(roleIds: Collection<Id>): Collection<PermissionDao>? {
         var permissionsIds: Collection<Id>? = null
         transaction {
-            permissionsIds = RolesPermissionsTable.select { RolesPermissionsTable.role eq roleId }
+            permissionsIds = RolesPermissionsTable.select { RolesPermissionsTable.role inList roleIds }
                 .map { it[RolesPermissionsTable.permission].value }
         }
 

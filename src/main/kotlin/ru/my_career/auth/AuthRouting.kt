@@ -8,6 +8,7 @@ import org.koin.ktor.ext.inject
 import ru.my_career.auth.services.AuthService
 import ru.my_career._common.confirmations.services.ConfirmationsService
 import ru.my_career._common.users.dto.CreateUserDto
+import ru.my_career._plugins.configureSecurity
 
 fun Application.configureAuthRouting() {
     routing {
@@ -21,12 +22,22 @@ fun Application.configureAuthRouting() {
             call.respond(res.statusCode, res)
         }
 
-        get("/login") {
-            val phoneNumber = call.parameters["phoneNumber"]
-            val code = call.parameters["code"]
-            // TODO: validation the phoneNumber parameter
-            val res = authService.login(phoneNumber!!, code!!)
-            call.respond(res.statusCode, res)
+        route("/login") {
+            get() {
+                val phoneNumber = call.parameters["phoneNumber"]
+                val code = call.parameters["code"]
+                // TODO: validation the phoneNumber parameter
+                val res = authService.login(phoneNumber!!, code!!)
+                call.respond(res.statusCode, res)
+            }
+
+            get("/company/{id}") {
+                val userId = call.request.queryParameters["userId"]
+                val companyId = call.parameters["id"]
+                // todo: implement validation of the userId and the companyId fields
+                val res = authService.authInCompany(userId!!.toInt(), companyId!!.toInt())
+                call.respond(res.statusCode, res)
+            }
         }
 
         route("/register") {

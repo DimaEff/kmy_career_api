@@ -8,7 +8,7 @@ import ru.my_career.companies.tables.CompaniesTable
 import ru.my_career.companies.tables.CompaniesUsersRolesTable
 
 class CompaniesRepository() {
-    fun createCompany(dto: CreateCompanyDto,): CompanyDao? {
+    fun createCompany(dto: CreateCompanyDto): CompanyDao? {
         return transaction {
             CompanyDao.new {
                 title = dto.title
@@ -25,6 +25,8 @@ class CompaniesRepository() {
 
         return getCompaniesByIds(companiesIds)
     }
+
+    fun getCompanyById(companyId: Id): CompanyDao? = transaction { CompanyDao.findById(companyId) }
 
     private fun getCompaniesByIds(ids: Collection<Id>): Collection<CompanyDao> {
         var companies: Collection<CompanyDao> = emptySet()

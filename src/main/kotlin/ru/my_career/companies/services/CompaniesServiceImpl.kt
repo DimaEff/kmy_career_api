@@ -45,4 +45,12 @@ class CompaniesServiceImpl(
         )
         return ResponseEntity(payload = companies.map { it.toDto() })
     }
+
+    override fun getCompanyById(companyId: Id): ResponseEntity<CompanyDto> {
+        val company = companiesRepository.getCompanyById(companyId) ?: return ResponseEntity(
+            HttpStatusCode.NotFound,
+            errorMessage = "The company not found"
+        )
+        return ResponseEntity(payload = company.toDto())
+    }
 }

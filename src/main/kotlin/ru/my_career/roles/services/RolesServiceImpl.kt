@@ -23,6 +23,17 @@ class RolesServiceImpl(
         }
     }
 
+    override fun getUserPermissionsForCompany(userId: Id, companyId: Id): ResponseEntity<Collection<PermissionDto>> {
+        val roles = rolesRepository.getUserRolesForCompany(companyId, userId)
+        val permissions =
+            permissionsRepository.getAllPermissionsOfRoles(roles.map { it.id.value }) ?: return ResponseEntity(
+                HttpStatusCode.BadRequest,
+                errorMessage = "Error with all roles permissions"
+            )
+        val uniquePermissions = permissions.map { it.toDto() }.distinctBy { it.title }
+        return ResponseEntity(payload = uniquePermissions)
+    }
+
     override fun createRole(dto: CreateRoleDto, jwtInfo: JwtInfo): ResponseEntity<RoleDto> {
         val commonRolePermissionsIds =
             if (dto.commonRoleTitle != null) rolesRepository.getPermissionsForCommonRole(CommonRoleTitle.valueOf(dto.commonRoleTitle)) else emptySet()
@@ -52,7 +63,7 @@ class RolesServiceImpl(
     }
 
     override fun getRolePermissions(id: Id): ResponseEntity<Collection<PermissionDto>> {
-        val permissions = permissionsRepository.getAllPermissionsOfRole(id)
+        val permissions = permissionsRepository.getAllPermissionsOfRoles(setOf(id))
         return if (permissions == null) {
             ResponseEntity(HttpStatusCode.NotFound, errorMessage = "Role not found")
         } else {

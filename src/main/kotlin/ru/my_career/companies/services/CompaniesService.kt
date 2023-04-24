@@ -8,4 +8,5 @@ import ru.my_career.companies.dto.CreateCompanyDto
 interface CompaniesService {
     fun createCompany(dto: CreateCompanyDto, userId: Id): ResponseEntity<CompanyDto>
     fun getUserCompanies(userId: Id): ResponseEntity<Collection<CompanyDto>>
+    fun getCompanyById(companyId: Id): ResponseEntity<CompanyDto>
 }
