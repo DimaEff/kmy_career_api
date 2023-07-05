@@ -8,6 +8,7 @@ import io.ktor.server.routing.*
 import org.koin.ktor.ext.inject
 import ru.my_career.roles.dto.CreatePermissionDto
 import ru.my_career.roles.dto.CreateUpdateCommonRolePermissionsDto
+import ru.my_career.roles.dto.DeleteRolesDto
 import ru.my_career.roles.services.PermissionsService
 import ru.my_career.roles.services.RolesService
 
@@ -19,7 +20,14 @@ fun Application.configAdminRouting() {
         route("/admin") {
             route("/roles") {
                 get {
+                    val res = rolesService.getAllRoles()
+                    call.respond(res.statusCode, res)
+                }
 
+                post("/delete") {
+                    val body = call.receive<DeleteRolesDto>()
+                    val res = rolesService.deleteRoles(body.roles)
+                    call.respond(res.statusCode, res)
                 }
 
                 route("/permissions") {

@@ -10,6 +10,7 @@ import org.jetbrains.exposed.sql.transactions.transaction
 import org.slf4j.LoggerFactory
 import ru.my_career._common.database.Id
 import ru.my_career.companies.repositories.CompanyDao
+import ru.my_career.companies.repositories.toDto
 import ru.my_career.companies.tables.CompaniesUsersRolesTable
 import ru.my_career.roles.CommonRoleTitle
 import ru.my_career.roles.dto.CreateRoleDto
@@ -23,10 +24,30 @@ import ru.my_career.roles.tables.RolesTable
 class RolesRepository {
     private val logger = LoggerFactory.getLogger(RolesRepository::class.java)
 
+    fun getAllRoles(): Collection<RoleDao>? = try {
+        val rolesDao = mutableListOf<RoleDao>()
+        transaction {
+            RoleDao.all().toCollection(rolesDao)
+        }
+    } catch (e: Error) {
+        logger.error(e.message)
+        null
+    }
+
+    fun deleteRoles(ids: Collection<Id>): Unit? = try {
+        transaction {
+            getRolesByIds(ids).forEach { it.delete() }
+        }
+    } catch (e: Error) {
+        logger.error(e.message)
+        null
+    }
+
     fun getCompanyRoles(companyId: Id): Collection<RoleDao>? {
         var rolesIds: Collection<Id>? = null
         transaction {
-            rolesIds = CompaniesUsersRolesTable.select { CompaniesUsersRolesTable.company eq companyId }.map { it[CompaniesUsersRolesTable.role].value }
+            rolesIds = CompaniesUsersRolesTable.select { CompaniesUsersRolesTable.company eq companyId }
+                .map { it[CompaniesUsersRolesTable.role].value }
         }
 
         if (rolesIds == null) {
@@ -36,6 +57,7 @@ class RolesRepository {
 
         return getRolesByIds(rolesIds as Collection<Id>)
     }
+
     fun getUserRolesForCompany(companyId: Id, userId: Id): Collection<RoleDao> {
         var rolesIds: Collection<Id> = emptySet()
         transaction {
@@ -66,7 +88,12 @@ class RolesRepository {
         null
     }
 
-    fun createRole(dto: CreateRoleDto, rolesPermissions: Collection<PermissionDao>, companyId: Id, userId: Id): RoleDao? {
+    fun createRole(
+        dto: CreateRoleDto,
+        rolesPermissions: Collection<PermissionDao>,
+        companyId: Id,
+        userId: Id
+    ): RoleDao? {
         return try {
             val commonTitle = if (dto.commonRoleTitle == null) null else CommonRoleTitle.getValueBy(dto.commonRoleTitle)
 
@@ -204,9 +231,13 @@ class RoleDao(id: EntityID<Id>) : IntEntity(id) {
     var company by CompanyDao referencedOn RolesTable.company
 }
 
-fun RoleDao.toDto(): RoleDto = RoleDto(
-    id = this.id.value,
-    title = this.title,
-    description = this.description,
-    commonRoleTitle = this.commonRoleTitle
-)
+fun RoleDao.toDto(): RoleDto = transaction {
+    RoleDto(
+        id = this@toDto.id.value,
+        title = this@toDto.title,
+        description = this@toDto.description,
+        permissions = this@toDto.permissions.map { it.toDto() },
+        company = this@toDto.company.toDto(),
+        commonRoleTitle = this@toDto.commonRoleTitle
+    )
+}

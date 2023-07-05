@@ -21,11 +21,9 @@ fun Application.configRolesRouting() {
 
         authenticate(JWT_AUTH_METHOD) {
             route("/roles") {
-                authenticate(JWT_AUTH_METHOD, "READ:roles") {
-                    get {
-                        val res = rolesService.getUserRolesForCompany(getJwtInfo(call))
-                        call.respond(res.statusCode, res)
-                    }
+                get {
+                    val res = rolesService.getUserRolesForCompany(getJwtInfo(call))
+                    call.respond(res.statusCode, res)
                 }
 
                 get("/company/{id}") {
@@ -34,30 +32,25 @@ fun Application.configRolesRouting() {
                     val res = rolesService.getCompanyRoles(companyId.toInt())
                     call.respond(res.statusCode, res)
                 }
-                authenticate(JWT_AUTH_METHOD, "WRITE:roles") {
-                    post {
-                        val body = call.receive<CreateRoleDto>()
-                        val res = rolesService.createRole(body, getJwtInfo(call))
-                        call.respond(res.statusCode, res)
-                    }
+
+                post {
+                    val body = call.receive<CreateRoleDto>()
+                    val res = rolesService.createRole(body, getJwtInfo(call))
+                    call.respond(res.statusCode, res)
                 }
 
-                authenticate(JWT_AUTH_METHOD, "WRITE:add_to_user") {
-                    get("/add_to_user") {
-                        val userId = call.request.queryParameters["userId"]!!
-                        val roleId = call.request.queryParameters["roleId"]!!
-                        val jwtInfo = getJwtInfo(call)
-                        val res =
-                            rolesService.addRoleToUserForCompany(jwtInfo.companyId, userId.toInt(), roleId.toInt())
-                        call.respond(res.statusCode, res)
-                    }
+                get("/add_to_user") {
+                    val userId = call.request.queryParameters["userId"]!!
+                    val roleId = call.request.queryParameters["roleId"]!!
+                    val jwtInfo = getJwtInfo(call)
+                    val res =
+                        rolesService.addRoleToUserForCompany(jwtInfo.companyId, userId.toInt(), roleId.toInt())
+                    call.respond(res.statusCode, res)
                 }
 
-                authenticate(JWT_AUTH_METHOD, "READ:permissions") {
-                    get("/permissions") {
-                        val res = permissionsService.getAllPermissions()
-                        call.respond(res.statusCode, res)
-                    }
+                get("/permissions") {
+                    val res = permissionsService.getAllPermissions()
+                    call.respond(res.statusCode, res)
                 }
 
                 get("/{id}/permissions") {

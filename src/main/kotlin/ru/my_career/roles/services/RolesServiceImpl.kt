@@ -14,6 +14,22 @@ class RolesServiceImpl(
     private val rolesRepository: RolesRepository,
     private val permissionsRepository: PermissionsRepository
 ) : RolesService {
+    override fun getAllRoles(): ResponseEntity<Collection<RoleDto>> {
+        val roles = rolesRepository.getAllRoles()?.map { it.toDto() }
+        return if (roles != null) {
+            ResponseEntity(payload = roles)
+        } else {
+            ResponseEntity(HttpStatusCode.BadRequest, errorMessage = "Error with getting of all roles")
+        }
+    }
+
+    override fun deleteRoles(rolesIds: Collection<Id>): ResponseEntity<String> =
+        if (rolesRepository.deleteRoles(rolesIds) != null) {
+            ResponseEntity(payload = "Success deleated the roles")
+        } else {
+            ResponseEntity(HttpStatusCode.BadRequest, errorMessage = "Some error with deleting the roles")
+        }
+
     override fun getCompanyRoles(companyId: Id): ResponseEntity<Collection<RoleDto>> {
         val roles = rolesRepository.getCompanyRoles(companyId) ?: return ResponseEntity(
             HttpStatusCode.BadRequest,

@@ -1,5 +1,6 @@
 package ru.my_career.roles.tables
 
+import org.jetbrains.exposed.sql.ReferenceOption
 import ru.my_career._common.database.DefaultTable
 import ru.my_career._common.database.VARCHAR_MID
 import ru.my_career._common.database.VARCHAR_SHORT
@@ -12,5 +13,5 @@ object RolesTable : DefaultTable() {
     val title = varchar("title", VARCHAR_SHORT)
     val description = varchar("description", VARCHAR_MID)
     val commonRoleTitle = enumType("common_role_title", CommonRoleTitle).nullable()
-    val company = reference("company", CompaniesTable)
+    val company = reference("company", CompaniesTable, onDelete = ReferenceOption.CASCADE)
 }
