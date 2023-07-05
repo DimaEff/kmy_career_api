@@ -13,7 +13,7 @@ class UsersRepository {
     fun createUser(dto: CreateUserDto): UserDao? = try {
         transaction {
             UserDao.new {
-                firstname = dto.firstname
+                firstname = dto.firstName
                 surname = dto.surname
                 phoneNumber = dto.phoneNumber
                 email = dto.email
@@ -25,6 +25,14 @@ class UsersRepository {
     }
 
     fun getUser(id: Id): UserDao? = transaction { UserDao.findById(id) }
+    fun getUsersByIds(ids: Collection<Id>): Collection<UserDao>? {
+        var users: Collection<UserDao>? = null
+        transaction {
+            users = UsersTable.select { UsersTable.id inList ids }.map { UserDao.wrapRow(it) }
+        }
+
+        return users
+    }
 
     fun getUserByPhoneNumber(phoneNumber: String): UserDao? = transaction {
         UsersTable.select { UsersTable.phoneNumber eq phoneNumber }.limit(1).firstOrNull()?.let { UserDao.wrapRow(it) }

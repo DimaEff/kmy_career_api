@@ -23,6 +23,19 @@ import ru.my_career.roles.tables.RolesTable
 class RolesRepository {
     private val logger = LoggerFactory.getLogger(RolesRepository::class.java)
 
+    fun getCompanyRoles(companyId: Id): Collection<RoleDao>? {
+        var rolesIds: Collection<Id>? = null
+        transaction {
+            rolesIds = CompaniesUsersRolesTable.select { CompaniesUsersRolesTable.company eq companyId }.map { it[CompaniesUsersRolesTable.role].value }
+        }
+
+        if (rolesIds == null) {
+            logger.warn("Roles for company $companyId not found")
+            return null
+        }
+
+        return getRolesByIds(rolesIds as Collection<Id>)
+    }
     fun getUserRolesForCompany(companyId: Id, userId: Id): Collection<RoleDao> {
         var rolesIds: Collection<Id> = emptySet()
         transaction {
@@ -155,7 +168,7 @@ class RolesRepository {
         return permissionsIds
     }
 
-    private fun addRoleForCompanyAndUser(companyId: Id, userId: Id, roleId: Id): Unit {
+    fun addRoleForCompanyAndUser(companyId: Id, userId: Id, roleId: Id): Unit {
         transaction {
             CompaniesUsersRolesTable.insert {
                 it[CompaniesUsersRolesTable.company] = companyId

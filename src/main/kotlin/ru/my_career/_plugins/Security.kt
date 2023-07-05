@@ -7,6 +7,7 @@ import com.auth0.jwt.algorithms.Algorithm
 import io.ktor.client.engine.*
 import io.ktor.http.*
 import io.ktor.server.application.*
+import io.ktor.server.application.*
 import io.ktor.server.response.*
 import org.koin.ktor.ext.inject
 import ru.my_career._common.types.ResponseEntity
@@ -30,7 +31,10 @@ fun Application.configureSecurity() {
                 if (credential.payload.audience.contains(jwtAudience)) JWTPrincipal(credential.payload) else null
             }
             challenge { defaultScheme, realm ->
-                val res = ResponseEntity<String>(HttpStatusCode.Unauthorized, errorMessage = "Token is not valid or has expired")
+                val res = ResponseEntity<String>(
+                    HttpStatusCode.Unauthorized,
+                    errorMessage = "Token is not valid or has expired"
+                )
                 call.respond(res.statusCode, res)
             }
         }

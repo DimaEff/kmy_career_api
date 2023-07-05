@@ -14,6 +14,14 @@ class RolesServiceImpl(
     private val rolesRepository: RolesRepository,
     private val permissionsRepository: PermissionsRepository
 ) : RolesService {
+    override fun getCompanyRoles(companyId: Id): ResponseEntity<Collection<RoleDto>> {
+        val roles = rolesRepository.getCompanyRoles(companyId) ?: return ResponseEntity(
+            HttpStatusCode.BadRequest,
+            errorMessage = "Invalid company id"
+        )
+        return ResponseEntity(payload = roles.map { it.toDto() })
+    }
+
     override fun getUserRolesForCompany(jwtInfo: JwtInfo): ResponseEntity<Collection<RoleDto>> {
         val roles = rolesRepository.getUserRolesForCompany(jwtInfo.companyId, jwtInfo.userId)
         return if (roles == null) {
@@ -51,6 +59,11 @@ class RolesServiceImpl(
         } else {
             ResponseEntity(HttpStatusCode.Created, payload = role.toDto())
         }
+    }
+
+    override fun addRoleToUserForCompany(companyId: Id, userId: Id, roleId: Id): ResponseEntity<String> {
+        rolesRepository.addRoleForCompanyAndUser(companyId, userId, roleId)
+        return ResponseEntity(payload = "Success added")
     }
 
     override fun getRoleById(id: Id): ResponseEntity<RoleDto> {

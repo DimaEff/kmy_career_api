@@ -7,6 +7,7 @@ import ru.my_career._common.types.ResponseEntity
 import ru.my_career.auth.dto.AuthUserDto
 import ru.my_career._common.confirmations.ConfirmationStatus
 import ru.my_career._common.confirmations.services.ConfirmationsService
+import ru.my_career._common.constants.EXPIRE_TIME
 import ru.my_career._common.database.Id
 import ru.my_career._common.users.dto.CreateUserDto
 import ru.my_career._common.users.dto.UserDto
@@ -74,7 +75,7 @@ class AuthServiceImpl(
             .withClaim("userId", userId)
             .withClaim("companyId", companyId)
             .withArrayClaim("permissions", permissionsTitles)
-            .withExpiresAt(Date(System.currentTimeMillis() + 60000))
+            .withExpiresAt(Date(System.currentTimeMillis() + EXPIRE_TIME))
             .sign(Algorithm.HMAC256("secret"))
     }
 }

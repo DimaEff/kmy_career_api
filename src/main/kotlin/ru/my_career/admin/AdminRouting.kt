@@ -18,6 +18,10 @@ fun Application.configAdminRouting() {
 
         route("/admin") {
             route("/roles") {
+                get {
+
+                }
+
                 route("/permissions") {
                     get {
                         val res = permissionsService.getAllPermissions()

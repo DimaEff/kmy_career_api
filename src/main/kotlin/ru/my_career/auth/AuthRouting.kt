@@ -1,12 +1,15 @@
 package ru.my_career.auth
 
 import io.ktor.server.application.*
+import io.ktor.server.auth.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import org.koin.ktor.ext.inject
 import ru.my_career.auth.services.AuthService
 import ru.my_career._common.confirmations.services.ConfirmationsService
+import ru.my_career._common.constants.JWT_AUTH_METHOD
+import ru.my_career._common.requests.getJwtInfo
 import ru.my_career._common.users.dto.CreateUserDto
 import ru.my_career._plugins.configureSecurity
 
@@ -36,6 +39,12 @@ fun Application.configureAuthRouting() {
                 val companyId = call.parameters["id"]
                 // todo: implement validation of the userId and the companyId fields
                 val res = authService.authInCompany(userId!!.toInt(), companyId!!.toInt())
+                call.respond(res.statusCode, res)
+            }
+
+            get("/auth_by_jwt") {
+                val jwtInfo = getJwtInfo(call)
+                val res = authService.authInCompany(jwtInfo.userId, jwtInfo.companyId)
                 call.respond(res.statusCode, res)
             }
         }

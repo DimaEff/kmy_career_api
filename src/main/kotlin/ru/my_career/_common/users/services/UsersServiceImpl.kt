@@ -28,8 +28,21 @@ class UsersServiceImpl(
         return ResponseEntity(HttpStatusCode.OK, user.toDto())
     }
 
+    override fun getUsersByIds(ids: Collection<Id>): ResponseEntity<Collection<UserDto>> {
+        val users =
+            usersRepository.getUsersByIds(ids) ?: return ResponseEntity(
+                HttpStatusCode.BadRequest,
+                errorMessage = "Invalid users ids"
+            )
+
+        return ResponseEntity(payload = users.map { it.toDto() })
+    }
+
     override fun getUserByPhone(phoneNumber: String): ResponseEntity<UserDto> {
-        val user = usersRepository.getUserByPhoneNumber(phoneNumber) ?: return ResponseEntity(HttpStatusCode.NotFound, errorMessage = "User not found")
+        val user = usersRepository.getUserByPhoneNumber(phoneNumber) ?: return ResponseEntity(
+            HttpStatusCode.NotFound,
+            errorMessage = "User not found"
+        )
 
         return ResponseEntity(payload = user.toDto())
     }

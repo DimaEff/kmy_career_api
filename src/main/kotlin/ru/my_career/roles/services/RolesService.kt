@@ -7,6 +7,8 @@ import ru.my_career.roles.dto.*
 
 interface RolesService {
     fun createRole(dto: CreateRoleDto, jwtInfo: JwtInfo): ResponseEntity<RoleDto>
+    fun addRoleToUserForCompany(companyId: Id, userId: Id, roleId: Id): ResponseEntity<String>
+    fun getCompanyRoles(companyId: Id): ResponseEntity<Collection<RoleDto>>
     fun getUserRolesForCompany(jwtInfo: JwtInfo): ResponseEntity<Collection<RoleDto>>
     fun getRoleById(id: Id): ResponseEntity<RoleDto>
     fun getUserPermissionsForCompany(userId: Id, companyId: Id): ResponseEntity<Collection<PermissionDto>>
