@@ -35,7 +35,8 @@ fun Application.configRolesRouting() {
 
                 post {
                     val body = call.receive<CreateRoleDto>()
-                    val res = rolesService.createRole(body, getJwtInfo(call))
+                    val jwtInfo = getJwtInfo(call)
+                    val res = rolesService.createRole(body, jwtInfo.companyId, jwtInfo.userId)
                     call.respond(res.statusCode, res)
                 }
 

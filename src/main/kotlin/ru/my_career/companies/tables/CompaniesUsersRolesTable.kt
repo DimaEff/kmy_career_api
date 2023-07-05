@@ -7,6 +7,6 @@ import ru.my_career._common.users.tables.UsersTable
 
 object CompaniesUsersRolesTable: Table() {
     val company = reference("company", CompaniesTable, onDelete = ReferenceOption.CASCADE)
-    val user = reference("name", UsersTable, onDelete = ReferenceOption.CASCADE)
+    val user = reference("name", UsersTable, onDelete = ReferenceOption.CASCADE).nullable()
     val role = reference("role", RolesTable, onDelete = ReferenceOption.CASCADE)
 }

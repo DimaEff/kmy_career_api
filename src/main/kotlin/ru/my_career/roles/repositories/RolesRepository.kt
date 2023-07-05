@@ -92,7 +92,7 @@ class RolesRepository {
         dto: CreateRoleDto,
         rolesPermissions: Collection<PermissionDao>,
         companyId: Id,
-        userId: Id
+        userId: Id?
     ): RoleDao? {
         return try {
             val commonTitle = if (dto.commonRoleTitle == null) null else CommonRoleTitle.getValueBy(dto.commonRoleTitle)
@@ -195,7 +195,7 @@ class RolesRepository {
         return permissionsIds
     }
 
-    fun addRoleForCompanyAndUser(companyId: Id, userId: Id, roleId: Id): Unit {
+    fun addRoleForCompanyAndUser(companyId: Id, userId: Id?, roleId: Id): Unit {
         transaction {
             CompaniesUsersRolesTable.insert {
                 it[CompaniesUsersRolesTable.company] = companyId

@@ -28,13 +28,13 @@ class CompaniesRepository() {
     }
 
     fun getCompanyUsers(companyId: Id): Collection<Id>? {
-        var companyIds: Collection<Id>? = null
+        var companyIds: Collection<Id?>? = null
         transaction {
             companyIds = CompaniesUsersRolesTable.select { CompaniesUsersRolesTable.company eq companyId }
-                .map { it[CompaniesUsersRolesTable.user].value }
+                .map { it[CompaniesUsersRolesTable.user]?.value }
         }
 
-        return companyIds
+        return companyIds?.filterNotNull()
     }
 
     fun getCompanyById(companyId: Id): CompanyDao? = transaction { CompanyDao.findById(companyId) }

@@ -32,7 +32,8 @@ class CompaniesServiceImpl(
                 permissions = emptySet(),
                 commonRoleTitle = CommonRoleTitle.OWNER.toString()
             ),
-            JwtInfo(userId, company.id.value)
+            companyId = company.id.value,
+            userId = userId
         )
         if (role.payload == null) return ResponseEntity(
             HttpStatusCode.InternalServerError,
