@@ -8,8 +8,7 @@ import io.ktor.server.routing.*
 import org.koin.ktor.ext.inject
 import ru.my_career._common.constants.JWT_AUTH_METHOD
 import ru.my_career._common.requests.getJwtInfo
-import ru.my_career.roles.dto.AddRoleToUserDto
-import ru.my_career.roles.dto.CreateRoleDto
+import ru.my_career.roles.dto.CreateUpdateRoleDto
 import ru.my_career.roles.dto.UpdateRolePermissionsDto
 import ru.my_career.roles.services.PermissionsService
 import ru.my_career.roles.services.RolesService
@@ -34,7 +33,7 @@ fun Application.configRolesRouting() {
                 }
 
                 post {
-                    val body = call.receive<CreateRoleDto>()
+                    val body = call.receive<CreateUpdateRoleDto>()
                     val jwtInfo = getJwtInfo(call)
                     val res = rolesService.createRole(body, jwtInfo.companyId, jwtInfo.userId)
                     call.respond(res.statusCode, res)

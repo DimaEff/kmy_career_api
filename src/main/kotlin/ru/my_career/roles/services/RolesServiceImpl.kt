@@ -58,7 +58,7 @@ class RolesServiceImpl(
         return ResponseEntity(payload = uniquePermissions)
     }
 
-    override fun createRole(dto: CreateRoleDto, companyId: Id, userId: Id?): ResponseEntity<RoleDto> {
+    override fun createRole(dto: CreateUpdateRoleDto, companyId: Id, userId: Id?): ResponseEntity<RoleDto> {
         val commonRolePermissionsIds =
             if (dto.commonRoleTitle != null) rolesRepository.getPermissionsForCommonRole(CommonRoleTitle.valueOf(dto.commonRoleTitle)) else emptySet()
         val permissionsIds = (dto.permissions + commonRolePermissionsIds).distinct()
@@ -143,5 +143,14 @@ class RolesServiceImpl(
         } else {
             ResponseEntity(payload = "Success removing")
         }
+    }
+
+    override fun updateRole(roleId: Int, dto: CreateUpdateRoleDto): ResponseEntity<RoleDto> {
+        val updatedRole = rolesRepository.updateRole(roleId, dto) ?: return ResponseEntity(
+            HttpStatusCode.BadRequest,
+            errorMessage = "Bad request"
+        )
+
+        return ResponseEntity(payload = updatedRole.toDto())
     }
 }

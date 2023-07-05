@@ -5,14 +5,12 @@ import ru.my_career._common.database.Id
 import ru.my_career._common.types.ResponseEntity
 import ru.my_career._common.users.dto.UserDto
 import ru.my_career._common.users.services.UsersService
-import ru.my_career.auth.dto.JwtInfo
 import ru.my_career.companies.dto.CompanyDto
 import ru.my_career.companies.dto.CreateCompanyDto
 import ru.my_career.companies.repositories.CompaniesRepository
 import ru.my_career.companies.repositories.toDto
 import ru.my_career.roles.CommonRoleTitle
-import ru.my_career.roles.dto.AddRoleToUserDto
-import ru.my_career.roles.dto.CreateRoleDto
+import ru.my_career.roles.dto.CreateUpdateRoleDto
 import ru.my_career.roles.services.RolesService
 
 class CompaniesServiceImpl(
@@ -26,7 +24,7 @@ class CompaniesServiceImpl(
             errorMessage = "Failed while create a company"
         )
         val role = rolesService.createRole(
-            CreateRoleDto(
+            CreateUpdateRoleDto(
                 title = "Owner",
                 description = "Owner",
                 permissions = emptySet(),

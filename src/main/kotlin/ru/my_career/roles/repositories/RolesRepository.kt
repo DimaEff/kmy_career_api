@@ -13,7 +13,7 @@ import ru.my_career.companies.repositories.CompanyDao
 import ru.my_career.companies.repositories.toDto
 import ru.my_career.companies.tables.CompaniesUsersRolesTable
 import ru.my_career.roles.CommonRoleTitle
-import ru.my_career.roles.dto.CreateRoleDto
+import ru.my_career.roles.dto.CreateUpdateRoleDto
 import ru.my_career.roles.dto.CreateUpdateCommonRolePermissionsDto
 import ru.my_career.roles.dto.RoleDto
 import ru.my_career.roles.dto.UpdateRolePermissionsDto
@@ -89,7 +89,7 @@ class RolesRepository {
     }
 
     fun createRole(
-        dto: CreateRoleDto,
+        dto: CreateUpdateRoleDto,
         rolesPermissions: Collection<PermissionDao>,
         companyId: Id,
         userId: Id?
@@ -117,6 +117,33 @@ class RolesRepository {
             logger.error("Error while creating a new role: ${e.message}")
             null
         }
+    }
+
+    fun updateRole(roleId: Id, dto: CreateUpdateRoleDto): RoleDao? {
+        val role = getRoleById(roleId) ?: return null
+        transaction {
+            role.title = dto.title
+            role.description = dto.description
+            if (dto.commonRoleTitle != null) {
+                role.commonRoleTitle = CommonRoleTitle.valueOf(dto.commonRoleTitle)
+            }
+        }
+        updatePermissions(roleId, dto.permissions)
+        return role
+    }
+
+    fun updatePermissions(roleId: Id, newPermissions: Collection<Id>): Unit? = try {
+        val role = getRoleById(roleId)
+        val oldPermissions = mutableListOf<Id>()
+        transaction {
+            role?.permissions?.map { it.id.value }?.toCollection(oldPermissions)
+        }
+        val (added, removed) = getAddedRemovedPermissions(oldPermissions, newPermissions)
+        addPermissionToRole(UpdateRolePermissionsDto(roleId, added))
+        removePermissionsFromRole(UpdateRolePermissionsDto(roleId, added))
+    } catch (e: Error) {
+        logger.error(e.message)
+        null
     }
 
     fun addPermissionToRole(dto: UpdateRolePermissionsDto): Unit? {
@@ -219,6 +246,12 @@ class RolesRepository {
 
         return commonRolesIds
     }
+
+    private fun getAddedRemovedPermissions(
+        oldPermissions: Collection<Id>,
+        newPermissions: Collection<Id>
+    ): Pair<Collection<Id>, Collection<Id>> =
+        Pair(newPermissions.minus(oldPermissions), oldPermissions.minus(newPermissions))
 }
 
 class RoleDao(id: EntityID<Id>) : IntEntity(id) {

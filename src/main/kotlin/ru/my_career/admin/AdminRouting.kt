@@ -6,9 +6,8 @@ import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import org.koin.ktor.ext.inject
-import ru.my_career.auth.dto.JwtInfo
 import ru.my_career.roles.dto.CreatePermissionDto
-import ru.my_career.roles.dto.CreateRoleDto
+import ru.my_career.roles.dto.CreateUpdateRoleDto
 import ru.my_career.roles.dto.CreateUpdateCommonRolePermissionsDto
 import ru.my_career.roles.dto.DeleteRolesDto
 import ru.my_career.roles.services.PermissionsService
@@ -26,11 +25,23 @@ fun Application.configAdminRouting() {
                     call.respond(res.statusCode, res)
                 }
 
+                get("/{roleId}") {
+                    val roleId = call.parameters["roleId"]!!
+                    val res = rolesService.getRoleById(roleId.toInt())
+                    call.respond(res.statusCode, res)
+                }
+
                 post {
-                    val body = call.receive<CreateRoleDto>()
+                    val body = call.receive<CreateUpdateRoleDto>()
                     val companyId = call.request.queryParameters["companyId"]!!
                     val res = rolesService.createRole(body, companyId.toInt(), null)
                     call.respond(res.statusCode, res)
+                }
+
+                put("/{roleId}") {
+                    val roleId = call.parameters["roleId"]!!
+                    val body = call.receive<CreateUpdateRoleDto>()
+                    val res = rolesService.updateRole(roleId.toInt(), body)
                 }
 
                 post("/delete") {
