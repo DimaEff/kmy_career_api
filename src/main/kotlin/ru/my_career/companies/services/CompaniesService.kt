@@ -8,6 +8,7 @@ import ru.my_career.companies.dto.CreateCompanyDto
 import ru.my_career.roles.dto.AddRoleToUserDto
 
 interface CompaniesService {
+    fun getAllCompanies(): ResponseEntity<Collection<CompanyDto>>
     fun createCompany(dto: CreateCompanyDto, userId: Id): ResponseEntity<CompanyDto>
     fun getUserCompanies(userId: Id): ResponseEntity<Collection<CompanyDto>>
     fun getCompanyUsers(companyId: Id): ResponseEntity<Collection<UserDto>>

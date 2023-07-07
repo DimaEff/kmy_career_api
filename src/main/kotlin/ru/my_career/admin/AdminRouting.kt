@@ -6,6 +6,7 @@ import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import org.koin.ktor.ext.inject
+import ru.my_career.companies.services.CompaniesService
 import ru.my_career.roles.dto.CreatePermissionDto
 import ru.my_career.roles.dto.CreateUpdateRoleDto
 import ru.my_career.roles.dto.CreateUpdateCommonRolePermissionsDto
@@ -15,10 +16,19 @@ import ru.my_career.roles.services.RolesService
 
 fun Application.configAdminRouting() {
     routing {
+        val companiesService by inject<CompaniesService>()
+
         val permissionsService by inject<PermissionsService>()
         val rolesService by inject<RolesService>()
 
         route("/admin") {
+            route("/companies") {
+                get {
+                    val res = companiesService.getAllCompanies()
+                    call.respond(res.statusCode, res)
+                }
+            }
+
             route("/roles") {
                 get {
                     val res = rolesService.getAllRoles()

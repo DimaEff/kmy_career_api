@@ -18,6 +18,14 @@ class CompaniesServiceImpl(
     private val companiesRepository: CompaniesRepository,
     private val usersService: UsersService
 ) : CompaniesService {
+    override fun getAllCompanies(): ResponseEntity<Collection<CompanyDto>> {
+        val companies = companiesRepository.getAllCompanies() ?: return ResponseEntity(
+            HttpStatusCode.BadRequest,
+            errorMessage = "Some error with getting all companies"
+        )
+        return ResponseEntity(payload = companies.map { it.toDto() })
+    }
+
     override fun createCompany(dto: CreateCompanyDto, userId: Id): ResponseEntity<CompanyDto> {
         val company = companiesRepository.createCompany(dto) ?: return ResponseEntity(
             HttpStatusCode.InternalServerError,
