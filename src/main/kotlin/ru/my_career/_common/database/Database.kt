@@ -13,6 +13,9 @@ import ru.my_career.roles.tables.PermissionsTable
 import ru.my_career.roles.tables.RolesPermissionsTable
 import ru.my_career.roles.tables.RolesTable
 import ru.my_career._common.users.tables.UsersTable
+import ru.my_career.tasks.tables.AttachmentsOfTasksTable
+import ru.my_career.tasks.tables.CommentsOfTasksTable
+import ru.my_career.tasks.tables.TasksTable
 
 object DatabaseFactory {
     fun init() {
@@ -20,14 +23,26 @@ object DatabaseFactory {
         initDB()
         transaction {
             SchemaUtils.create(
+                // roles
                 PermissionsTable,
                 RolesTable,
                 RolesPermissionsTable,
                 CommonRoleTitlePermissionTable,
+
+                // users
                 UsersTable,
+
+                // companies
                 CompaniesTable,
                 CompaniesUsersRolesTable,
-                ConfirmationsTable
+
+                // auth
+                ConfirmationsTable,
+
+                // tasks
+                TasksTable,
+                CommentsOfTasksTable,
+                AttachmentsOfTasksTable,
             )
         }
     }
