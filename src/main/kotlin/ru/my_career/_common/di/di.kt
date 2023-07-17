@@ -22,6 +22,11 @@ import ru.my_career.roles.services.RolesServiceImpl
 import ru.my_career._common.users.repositories.UsersRepository
 import ru.my_career._common.users.services.UsersService
 import ru.my_career._common.users.services.UsersServiceImpl
+import ru.my_career.tasks.repositories.CommentOfTaskDao
+import ru.my_career.tasks.repositories.CommentsOfTasksRepository
+import ru.my_career.tasks.repositories.TasksRepository
+import ru.my_career.tasks.services.TasksService
+import ru.my_career.tasks.services.TasksServiceImpl
 
 val applicationModule = module {
     // repository
@@ -30,6 +35,8 @@ val applicationModule = module {
     single { UsersRepository() }
     single { CompaniesRepository() }
     single { ConfirmationsRepository() }
+    single { TasksRepository() }
+    single { CommentsOfTasksRepository() }
 
     // common
     single<HttpClient> { httpClient }
@@ -45,13 +52,26 @@ val applicationModule = module {
     // services
     single<PermissionsService> { PermissionsServiceImpl(get<PermissionsRepository>()) }
     single<RolesService> { RolesServiceImpl(get<RolesRepository>(), get<PermissionsRepository>()) }
-    single<CompaniesService> { CompaniesServiceImpl(get<RolesService>(), get<CompaniesRepository>(), get<UsersService>()) }
+    single<CompaniesService> {
+        CompaniesServiceImpl(
+            get<RolesService>(),
+            get<CompaniesRepository>(),
+            get<UsersService>()
+        )
+    }
     single<AuthService> {
         AuthServiceImpl(
             get<ConfirmationsService>(),
             get<UsersService>(),
             get<RolesService>(),
             get<CompaniesService>()
+        )
+    }
+    single<TasksService> {
+        TasksServiceImpl(
+            get<TasksRepository>(),
+            get<CompaniesRepository>(),
+            get<UsersRepository>()
         )
     }
 }
