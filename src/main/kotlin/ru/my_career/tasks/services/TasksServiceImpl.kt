@@ -4,10 +4,7 @@ import io.ktor.http.*
 import ru.my_career._common.types.ResponseEntity
 import ru.my_career._common.users.repositories.UsersRepository
 import ru.my_career.companies.repositories.CompaniesRepository
-import ru.my_career.tasks.dto.CommentOfTaskDto
-import ru.my_career.tasks.dto.CreateCommentOfTaskDto
-import ru.my_career.tasks.dto.CreateTaskDto
-import ru.my_career.tasks.dto.TaskDto
+import ru.my_career.tasks.dto.*
 import ru.my_career.tasks.repositories.TasksRepository
 import ru.my_career.tasks.repositories.toDto
 
@@ -78,6 +75,15 @@ class TasksServiceImpl(
             errorMessage = "Some error"
         )
         return ResponseEntity(payload = tasks.map { it.toDto() })
+    }
+
+    override fun updateTask(dto: UpdateTaskDto): ResponseEntity<TaskDto> {
+        val user = dto.assignedTo?.let { usersRepository.getUser(it) }
+        val task = tasksRepository.updateTask(dto, user) ?: return ResponseEntity(
+            HttpStatusCode.BadRequest,
+            errorMessage = "Some error"
+        )
+        return ResponseEntity(payload = task.toDto())
     }
 
     override fun createCommentOfTask(dto: CreateCommentOfTaskDto, userId: Int): ResponseEntity<String> {

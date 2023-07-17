@@ -9,6 +9,7 @@ import org.koin.ktor.ext.inject
 import ru.my_career._common.constants.JWT_AUTH_METHOD
 import ru.my_career._common.requests.getJwtInfo
 import ru.my_career.tasks.dto.CreateTaskDto
+import ru.my_career.tasks.dto.UpdateTaskDto
 import ru.my_career.tasks.services.TasksService
 
 fun Application.configTasksRouting() {
@@ -21,6 +22,12 @@ fun Application.configTasksRouting() {
                     val body = call.receive<CreateTaskDto>()
                     val jwtInfo = getJwtInfo(call)
                     val res = tasksService.createTask(body, jwtInfo.companyId, jwtInfo.userId)
+                    call.respond(res.statusCode, res)
+                }
+
+                put {
+                    val body = call.receive<UpdateTaskDto>()
+                    val res = tasksService.updateTask(body)
                     call.respond(res.statusCode, res)
                 }
 

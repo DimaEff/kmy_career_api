@@ -10,7 +10,9 @@ interface TasksService {
     fun getCompanyTasks(companyId: Int): ResponseEntity<Collection<TaskDto>>
     fun getById(taskId: Int): ResponseEntity<TaskDto>
     fun getTasksAssignedTo(userId: Int): ResponseEntity<Collection<TaskDto>>
+    fun getNotAssignedTasks(): ResponseEntity<Collection<TaskDto>>
     fun getTasksByCreated(userId: Int): ResponseEntity<Collection<TaskDto>>
+    fun updateTask(dto: UpdateTaskDto): ResponseEntity<TaskDto>
 
     // comments
     fun createCommentOfTask(dto: CreateCommentOfTaskDto, userId: Int): ResponseEntity<String>
@@ -18,5 +20,4 @@ interface TasksService {
 
     // attachments
     // fun getAttachmentsOfTask(taskId: Int): ResponseEntity<Collection<AttachmentOfTaskDto>>
-    fun getNotAssignedTasks(): ResponseEntity<Collection<TaskDto>>
 }

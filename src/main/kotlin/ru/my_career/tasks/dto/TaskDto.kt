@@ -6,6 +6,7 @@ import ru.my_career.tasks.TaskStatus
 
 @Serializable
 data class TaskDto(
+    val id: Int,
     val title: String,
     val description: String,
     val createdBy: UserDto,
