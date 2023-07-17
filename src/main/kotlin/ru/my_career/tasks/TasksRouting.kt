@@ -29,6 +29,29 @@ fun Application.configTasksRouting() {
                     val res = tasksService.getCompanyTasks(jwtInfo.companyId)
                     call.respond(res.statusCode, res)
                 }
+
+                get("/{id}") {
+                    val id = call.parameters["id"]!!
+                    val res = tasksService.getById(id.toInt())
+                    call.respond(res.statusCode, res)
+                }
+
+                get("/assigned/{id}") {
+                    val id = call.parameters["id"]!!
+                    val res = tasksService.getTasksAssignedTo(id.toInt())
+                    call.respond(res.statusCode, res)
+                }
+
+                get("/not-assigned") {
+                    val res = tasksService.getNotAssignedTasks()
+                    call.respond(res.statusCode, res)
+                }
+
+                get("/created-by/{id}") {
+                    val id = call.parameters["id"]!!
+                    val res = tasksService.getTasksByCreated(id.toInt())
+                    call.respond(res.statusCode, res)
+                }
             }
         }
     }

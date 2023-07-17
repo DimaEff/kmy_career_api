@@ -48,16 +48,36 @@ class TasksServiceImpl(
         return ResponseEntity(payload = tasks.map { it.toDto() })
     }
 
-    override fun getOne(taskId: Int): ResponseEntity<TaskDto> {
-        TODO("Not yet implemented")
+    override fun getById(taskId: Int): ResponseEntity<TaskDto> {
+        val task = tasksRepository.getById(taskId) ?: return ResponseEntity(
+            HttpStatusCode.BadRequest,
+            errorMessage = "Some error"
+        )
+        return ResponseEntity(payload = task.toDto())
     }
 
-    override fun getAssignedToTasks(userId: Int): ResponseEntity<Collection<TaskDto>> {
-        TODO("Not yet implemented")
+    override fun getTasksAssignedTo(userId: Int): ResponseEntity<Collection<TaskDto>> {
+        val tasks = tasksRepository.getTasksByAssignedTo(userId) ?: return ResponseEntity(
+            HttpStatusCode.BadRequest,
+            errorMessage = "Some error"
+        )
+        return ResponseEntity(payload = tasks.map { it.toDto() })
     }
 
-    override fun getCreatedByTasks(userId: Int): ResponseEntity<Collection<TaskDto>> {
-        TODO("Not yet implemented")
+    override fun getNotAssignedTasks(): ResponseEntity<Collection<TaskDto>> {
+        val tasks = tasksRepository.getTasksByAssignedTo(null) ?: return ResponseEntity(
+            HttpStatusCode.BadRequest,
+            errorMessage = "Some error"
+        )
+        return ResponseEntity(payload = tasks.map { it.toDto() })
+    }
+
+    override fun getTasksByCreated(userId: Int): ResponseEntity<Collection<TaskDto>> {
+        val tasks = tasksRepository.getTasksByCreated(userId) ?: return ResponseEntity(
+            HttpStatusCode.BadRequest,
+            errorMessage = "Some error"
+        )
+        return ResponseEntity(payload = tasks.map { it.toDto() })
     }
 
     override fun createCommentOfTask(dto: CreateCommentOfTaskDto, userId: Int): ResponseEntity<String> {

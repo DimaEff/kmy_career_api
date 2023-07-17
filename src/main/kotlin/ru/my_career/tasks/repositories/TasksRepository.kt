@@ -49,6 +49,18 @@ class TasksRepository {
         }
         return tasks
     }
+
+    fun getById(taskId: Int): TaskDao? = transaction {
+        TaskDao.findById(taskId)
+    }
+
+    fun getTasksByAssignedTo(userId: Int?): Collection<TaskDao>?  = transaction {
+        TasksTable.select { TasksTable.assignedTo eq userId }.map { TaskDao.wrapRow(it) }
+    }
+
+    fun getTasksByCreated(userId: Int): Collection<TaskDao>? = transaction {
+        TasksTable.select { TasksTable.createdBy eq userId }.map { TaskDao.wrapRow(it) }
+    }
 }
 
 class TaskDao(id: EntityID<Id>) : IntEntity(id) {
