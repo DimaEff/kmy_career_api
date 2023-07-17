@@ -23,6 +23,12 @@ fun Application.configTasksRouting() {
                     val res = tasksService.createTask(body, jwtInfo.companyId, jwtInfo.userId)
                     call.respond(res.statusCode, res)
                 }
+
+                get {
+                    val jwtInfo = getJwtInfo(call)
+                    val res = tasksService.getCompanyTasks(jwtInfo.companyId)
+                    call.respond(res.statusCode, res)
+                }
             }
         }
     }

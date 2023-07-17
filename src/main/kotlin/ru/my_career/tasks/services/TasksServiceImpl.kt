@@ -3,7 +3,6 @@ package ru.my_career.tasks.services
 import io.ktor.http.*
 import ru.my_career._common.types.ResponseEntity
 import ru.my_career._common.users.repositories.UsersRepository
-import ru.my_career._common.users.services.UsersService
 import ru.my_career.companies.repositories.CompaniesRepository
 import ru.my_career.tasks.dto.CommentOfTaskDto
 import ru.my_career.tasks.dto.CreateCommentOfTaskDto
@@ -33,7 +32,20 @@ class TasksServiceImpl(
     }
 
     override fun getAll(): ResponseEntity<Collection<TaskDto>> {
-        TODO("Not yet implemented")
+        val tasks = tasksRepository.getAll() ?: return ResponseEntity(
+            HttpStatusCode.BadRequest,
+            errorMessage = "Error while getting all tasks"
+        )
+        return ResponseEntity(payload = tasks.map { it.toDto() })
+    }
+
+    override fun getCompanyTasks(companyId: Int): ResponseEntity<Collection<TaskDto>> {
+        val tasks =
+            tasksRepository.getAllByCompany(companyId) ?: return ResponseEntity(
+                HttpStatusCode.BadRequest,
+                errorMessage = "Some error"
+            )
+        return ResponseEntity(payload = tasks.map { it.toDto() })
     }
 
     override fun getOne(taskId: Int): ResponseEntity<TaskDto> {

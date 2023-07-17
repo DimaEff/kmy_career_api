@@ -7,6 +7,7 @@ interface TasksService {
     // tasks
     fun createTask(dto: CreateTaskDto, companyId: Int, userId: Int): ResponseEntity<TaskDto>
     fun getAll(): ResponseEntity<Collection<TaskDto>>
+    fun getCompanyTasks(companyId: Int): ResponseEntity<Collection<TaskDto>>
     fun getOne(taskId: Int): ResponseEntity<TaskDto>
     fun getAssignedToTasks(userId: Int): ResponseEntity<Collection<TaskDto>>
     fun getCreatedByTasks(userId: Int): ResponseEntity<Collection<TaskDto>>

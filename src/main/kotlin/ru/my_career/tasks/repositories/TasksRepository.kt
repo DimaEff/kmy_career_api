@@ -3,6 +3,7 @@ package ru.my_career.tasks.repositories
 import org.jetbrains.exposed.dao.IntEntity
 import org.jetbrains.exposed.dao.IntEntityClass
 import org.jetbrains.exposed.dao.id.EntityID
+import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.slf4j.LoggerFactory
 import ru.my_career._common.database.Id
@@ -34,6 +35,19 @@ class TasksRepository {
             dueDate = dto.dueDate?.let { milliToLocalDateTime(it) }
             // status = TaskStatus.TODO is a default value in the TasksTable
         }
+    }
+
+    fun getAll(): Collection<TaskDao>?  = transaction {
+        val tasks = mutableListOf<TaskDao>()
+        TaskDao.all().toCollection(tasks)
+    }
+
+    fun getAllByCompany(companyId: Int): Collection<TaskDao>? {
+        val tasks = mutableListOf<TaskDao>()
+        transaction {
+            TasksTable.select { TasksTable.company eq companyId }.map { TaskDao.wrapRow(it) }.toCollection(tasks)
+        }
+        return tasks
     }
 }
 
